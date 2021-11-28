@@ -1,6 +1,20 @@
-# Getting Started with Create React App
+# NNY 관리자 콘솔
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- react
+- typescript
+- firebase
+- ag-grid
+
+## Package
+
+- react-router-dom
+- redux react-redux @types/react-redux @reduxjs/toolkit
+- firebase
+- ag-grid-community ag-grid-react ag-grid-enterprise
+
+## Firebase setting
+
+- hosting: consolenny
 
 ## Available Scripts
 
