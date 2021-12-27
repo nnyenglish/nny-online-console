@@ -1,10 +1,12 @@
 import { Timestamp } from 'firebase/firestore';
 
 export interface UserDoc {
+  _id: string;
   _timeCreate: Timestamp;
   _timeUpdate?: Timestamp;
 
   email: string;
+  // level: string;
 
   tel?: string;
   ip?: string;
@@ -16,6 +18,8 @@ export interface UserDoc {
   roleStudent?: boolean;
 
   classRooms: string[];
+  // 결제를 원하는 classRoom을 넣는다.
+  cart: string[];
 }
 
 export interface UserDocs {
@@ -83,7 +87,12 @@ export interface ClassRoom {
 
   thumbnail: string;
   teachers: string[];
+  // 수강 가능한 레벨
   levels: Level[];
 }
+
+// 관계를 생각해보자
+// 강의실에 강의 목록이있으며, 해당 강의마다 수강 가능한 레벨이 있다. 사용자의 레벨에 수강 가능한 강의만 보인다.
+// 만약 강의에 레벨
 
 export type Level = 'PRIMER' | 'BEGINNER' | 'CHALLENGER' | 'FLYER' | 'DISCIPLE' | 'EVERYONE';

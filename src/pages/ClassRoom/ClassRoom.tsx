@@ -1,22 +1,22 @@
-import { onSnapshot } from "@firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { onSnapshot } from "@firebase/firestore";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { ColDef, ValueSetterParams } from "ag-grid-community";
 
 import { fbCollectionQuery, fbUpdateDocField } from "../../firebase";
+import { LectureDoc } from "../../lib/1/schema";
 
 import 'ag-grid-enterprise';
 import "ag-grid-community/dist/styles/ag-grid.css";
-import "ag-grid-community/dist/styles/ag-theme-alpine.css";
+import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
 import styles from "./ClassRoom.module.scss";
-import { LectureDoc } from "../../lib/1/schema";
+import MultiSelectBox from "../../components/MultiSelectBox/MultiSelectBox";
 
 const lectureCollectionPath = "lecture";
 
 const ClassRoom = () => {
   const [rowData, setRowData] = useState<LectureDoc[]>([]);
   const [gridColumnApi, setGridColumnApi] = useState<any>(null);
-  console.log(gridColumnApi);
 
   useEffect(() => {
     const query = fbCollectionQuery(lectureCollectionPath, []);
@@ -61,7 +61,7 @@ const ClassRoom = () => {
 
 	return (
 		<div className={styles.pageContainer}>
-			<div className={`ag-theme-alpine ${styles.agContainer}`}>
+			<div className={`ag-theme-balham-dark ${styles.agContainer}`}>
 				<AgGridReact
 					defaultColDef={defaultColDef}
 					groupDefaultExpanded={1}
@@ -69,6 +69,9 @@ const ClassRoom = () => {
 					suppressScrollOnNewData={true}
 					onGridReady={onGridReady}
 					rowData={rowData}
+					frameworkComponents={{
+						multiSelectBoxEditor: MultiSelectBox
+					}}
 				>
           <AgGridColumn
             headerName="강의실"
@@ -79,8 +82,8 @@ const ClassRoom = () => {
 					<AgGridColumn
 						field="room"
 						headerName="강의실"
+						maxWidth={120}
             valueFormatter={(params) => {
-              console.log(params);
               const mappings:{[key: string]: string} = {
                 "temp-room-id": "Beginner 초급"
               }
@@ -89,6 +92,14 @@ const ClassRoom = () => {
 						editable={true}
 						valueSetter={valueSetter}
             rowGroup={true}
+					></AgGridColumn>
+					<AgGridColumn
+						field="levels"
+						headerName="레벨"
+						editable={true}
+						// TODO: 추후 값을 넘겨줄 수 있는 방법 찾기
+						cellEditor="multiSelectBoxEditor"
+						valueSetter={valueSetter}
 					></AgGridColumn>
 					<AgGridColumn
 						field="sortKey"

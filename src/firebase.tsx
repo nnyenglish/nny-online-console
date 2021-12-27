@@ -33,12 +33,15 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 // Firestore
 export const db = getFirestore(firebaseApp);
+
 export const fbCollectionQuery = (
 	collectionPath: string,
 	where: QueryConstraint[]
 ) => query(collection(db, collectionPath), ...where);
+
 export const fbGetDocs = (collectionPath: string) =>
 	getDocs(collection(db, collectionPath));
+
 export const fbUpdateDocField = (
 	docPath: string,
 	fieldPath: string,
@@ -48,9 +51,12 @@ export const fbUpdateDocField = (
 // Auth
 const fbAuth = getAuth(firebaseApp);
 export const currentUser = fbAuth.currentUser;
+
 export const signInService = (email: string, password: string) =>
 	signInWithEmailAndPassword(fbAuth, email, password);
+
 export const signOutService = () => signOut(fbAuth);
+
 export const onAuthStateChangedService = (
 	observer: (user: User | null) => void
 ) => onAuthStateChanged(fbAuth, observer);
