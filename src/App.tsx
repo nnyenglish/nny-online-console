@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { onAuthStateChangedService } from './firebase';
 
 import AppRouter from './Router';
+import './App.scss';
 
 function App() {
   const [init, setInit] = useState(false);

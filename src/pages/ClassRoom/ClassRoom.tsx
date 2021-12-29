@@ -61,6 +61,9 @@ const ClassRoom = () => {
 
 	return (
 		<div className={styles.pageContainer}>
+			<header className="option-header">
+				<button style={{width: "120px"}}>신규 강의 추가</button>
+			</header>
 			<div className={`ag-theme-balham-dark ${styles.agContainer}`}>
 				<AgGridReact
 					defaultColDef={defaultColDef}
