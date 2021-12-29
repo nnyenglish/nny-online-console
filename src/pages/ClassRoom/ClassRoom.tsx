@@ -11,6 +11,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
 import styles from "./ClassRoom.module.scss";
 import MultiSelectBox from "../../components/EditLevel/EditLevel";
+import LectureDialog from "../../components/LectureDialog/LectureDialog";
 
 const lectureCollectionPath = "lecture";
 
@@ -62,7 +63,7 @@ const ClassRoom = () => {
 	return (
 		<div className={styles.pageContainer}>
 			<header className="option-header">
-				<button style={{width: "120px"}}>신규 강의 추가</button>
+				<LectureDialog />
 			</header>
 			<div className={`ag-theme-balham-dark ${styles.agContainer}`}>
 				<AgGridReact
@@ -72,6 +73,7 @@ const ClassRoom = () => {
 					suppressScrollOnNewData={true}
 					onGridReady={onGridReady}
 					rowData={rowData}
+					stopEditingWhenCellsLoseFocus={true}
 					frameworkComponents={{
 						multiSelectBoxEditor: MultiSelectBox
 					}}

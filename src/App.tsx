@@ -3,6 +3,9 @@ import { onAuthStateChangedService } from './firebase';
 
 import AppRouter from './Router';
 import './App.scss';
+import { initializeIcons } from '@fluentui/react';
+
+initializeIcons();
 
 function App() {
   const [init, setInit] = useState(false);
