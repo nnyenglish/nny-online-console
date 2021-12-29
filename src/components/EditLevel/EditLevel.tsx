@@ -7,7 +7,7 @@ import React, {
 	useState,
 } from "react";
 
-import styles from "./MultiSelectBox.module.scss";
+import styles from "./EditLevel.module.scss";
 
 const MultiSelectBox = forwardRef((props: any, ref: any) => {
 	const [value, setValue] = useState<string[]>(props.value);

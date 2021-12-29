@@ -10,7 +10,7 @@ import 'ag-grid-enterprise';
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
 import styles from "./ClassRoom.module.scss";
-import MultiSelectBox from "../../components/MultiSelectBox/MultiSelectBox";
+import MultiSelectBox from "../../components/EditLevel/EditLevel";
 
 const lectureCollectionPath = "lecture";
 
@@ -97,7 +97,6 @@ const ClassRoom = () => {
 						field="levels"
 						headerName="레벨"
 						editable={true}
-						// TODO: 추후 값을 넘겨줄 수 있는 방법 찾기
 						cellEditor="multiSelectBoxEditor"
 						valueSetter={valueSetter}
 					></AgGridColumn>

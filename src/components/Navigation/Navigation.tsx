@@ -67,7 +67,7 @@ const Navigation = () => {
 				</button>
 				<nav className={styles["mobile-nav"]}>
 					{navItems.map((item, idx) => (
-						<NavLink key={idx} to={item.route}>{item.name}</NavLink>
+						<NavLink key={idx} className={({ isActive }) => isActive ? styles["active-nav"] : ""} to={item.route}>{item.name}</NavLink>
 					))}
 				</nav>
 			</div>
