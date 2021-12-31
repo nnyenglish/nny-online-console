@@ -42,8 +42,7 @@ export interface Lecture {
   sortKey: number;
   /** 1 */
   lectureNo: number;
-  /** 하나의 강의가 여러개의 반에 들어갈 수 있다. */
-  rooms: string[];
+  room: string;
 
   title: string;
   subTitle: string;
