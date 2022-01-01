@@ -17,7 +17,6 @@ const initialTeacherOptions = [
   { key: "Sidney", text: "Sidney" },
   { key: "Hubert", text: "Hubert" },
 ];
-
 const initialLevelOptions = [
   { key: "PRIMER", text: "PRIMER" },
   { key: "BEGINNER", text: "BEGINNER" },
@@ -26,6 +25,7 @@ const initialLevelOptions = [
   { key: "DISCIPLE", text: "DISCIPLE" },
   { key: "EVERYONE", text: "EVERYONE" },
 ];
+const urlRegex = new RegExp(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/ig);
 
 const LectureDialog: React.FunctionComponent = () => {
 	const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
@@ -51,6 +51,18 @@ const LectureDialog: React.FunctionComponent = () => {
 		},
 		[lectureInputs]
 	);
+
+	const onGetErrorMessage = (value: string, regex?: RegExp) => {
+		if (value.length === 0) {
+			return '필수 필드입니다.';
+		}
+
+		if (regex) {
+			return value.match(regex) === null ? '올바른 URL 형식을 입력해주세요.' : undefined;
+		}
+
+		return undefined;
+	}
 
   const onChangeTeachers = useCallback(
     (event: React.FormEvent<IComboBox>, option?: IComboBoxOption, index?: number, value?: string): void => {
@@ -99,7 +111,7 @@ const LectureDialog: React.FunctionComponent = () => {
 			lectureNo: Number(lectureInputs.lectureNo),
 			title: lectureInputs.title,
 			subTitle: lectureInputs.subTitle
-		}
+		};
 		try {
 			await fbCreateDoc('lecture', undefined, doc);
 			toggleHideDialog();
@@ -130,6 +142,7 @@ const LectureDialog: React.FunctionComponent = () => {
 					onChange={onChangeLectureInputs}
 					type="text"
 					placeholder="New Brush up 4-1 (셋째달)"
+					onGetErrorMessage={onGetErrorMessage}
 					required
 				/>
 				<TextField
@@ -155,7 +168,9 @@ const LectureDialog: React.FunctionComponent = () => {
 					value={lectureInputs.lectureNo}
 					onChange={onChangeLectureInputs}
 					type="number"
+					pattern="\d+"
 					placeholder="1"
+					onGetErrorMessage={onGetErrorMessage}
           required
 				/>
 				<TextField
@@ -165,6 +180,8 @@ const LectureDialog: React.FunctionComponent = () => {
 					onChange={onChangeLectureInputs}
 					placeholder="1001"
 					type="number"
+					pattern="\d+"
+					onGetErrorMessage={onGetErrorMessage}
 					required
 				/>
 				<TextField
@@ -174,6 +191,7 @@ const LectureDialog: React.FunctionComponent = () => {
 					onChange={onChangeLectureInputs}
 					placeholder="https://vimeo.com/283335192/cd25d662b0"
 					type="url"
+					onGetErrorMessage={(value) => onGetErrorMessage(value, urlRegex)}
 					required
 				/>
         <ComboBox
@@ -181,6 +199,7 @@ const LectureDialog: React.FunctionComponent = () => {
 					multiSelect
           selectedKey={selectedTeachers}
           options={initialTeacherOptions}
+					errorMessage={selectedTeachers.length === 0 ? '필수 필드입니다.' : undefined}
           onChange={onChangeTeachers}
         />
         <ComboBox
@@ -188,6 +207,7 @@ const LectureDialog: React.FunctionComponent = () => {
           multiSelect
           selectedKey={selectedLevels}
           options={initialLevelOptions}
+					errorMessage={selectedLevels.length === 0 ? '필수 필드입니다.' : undefined}
           onChange={onChangeLevels}
         />
 				<DialogFooter>
