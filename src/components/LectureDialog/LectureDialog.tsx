@@ -1,44 +1,44 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Dialog, DialogFooter } from "@fluentui/react/lib/Dialog";
 import { PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ComboBox, IComboBox, IComboBoxOption, IModalProps, TextField } from "@fluentui/react";
-import { fbCreateDoc } from "../../firebase";
-import { Lecture, Level } from "../../lib/1/schema";
 
+import { createDoc, getDocsArrayWithWhere } from "../../firebase";
+import { ClassRoomDoc, Lecture, Level } from "../../lib/1/schema";
+import { Levels, Teachers } from "../../lib/1/string-map";
+
+const classRoomCollectionPath = "classRoom";
 const modalProps: IModalProps = {
 	isBlocking: true,
 };
 const dialogContentProps = {
 	title: "신규 강의 추가",
 };
-const initialTeacherOptions = [
-  { key: "Paul", text: "Paul" },
-  { key: "Sidney", text: "Sidney" },
-  { key: "Hubert", text: "Hubert" },
-];
-const initialLevelOptions = [
-  { key: "PRIMER", text: "PRIMER" },
-  { key: "BEGINNER", text: "BEGINNER" },
-  { key: "CHALLENGER", text: "CHALLENGER" },
-  { key: "FLYER", text: "FLYER" },
-  { key: "DISCIPLE", text: "DISCIPLE" },
-  { key: "EVERYONE", text: "EVERYONE" },
-];
+const initialTeacherOptions = Teachers.map((v) => ({ key: v, text: v }));
+const initialLevelOptions = Levels.map((v) => ({ key: v, text: v }));
 const urlRegex = new RegExp(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/ig);
 
 const LectureDialog: React.FunctionComponent = () => {
 	const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
+	const [initialClassRoomOptions, setInitialClassRoomOptions] = useState<{key: string, text: string }[]>([]);
 	const [lectureInputs, setLectureInputs] = useState({
 		title: "",
 		subTitle: "",
 		lectureNo: "",
-		discription: "",
+		description: "",
 		sortKey: "",
 		vimeoUrl: "",
 	});
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>(["Paul"]);
   const [selectedLevels, setSelectedLevels] = useState<Level[]>(["EVERYONE"]);
+	const [selectedClassRooms, setSelectedClassRooms] = useState<string[]>([]);
+
+	useEffect(() => {
+		getDocsArrayWithWhere<ClassRoomDoc>(classRoomCollectionPath, []).then(classRooms => {
+			setInitialClassRoomOptions(classRooms.map(cr => ({key: cr._id, text: cr.roomName})));
+		});
+	}, []);
 
 	const onChangeLectureInputs = useCallback(
 		(
@@ -65,7 +65,7 @@ const LectureDialog: React.FunctionComponent = () => {
 	}
 
   const onChangeTeachers = useCallback(
-    (event: React.FormEvent<IComboBox>, option?: IComboBoxOption, index?: number, value?: string): void => {
+    (event: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
       let selected = option?.selected;
       setSelectedTeachers(prevSelectedKeys =>
         selected ? [...prevSelectedKeys, option!.key as string] : prevSelectedKeys.filter(k => k !== option!.key),
@@ -74,7 +74,7 @@ const LectureDialog: React.FunctionComponent = () => {
     [],
   );
   const onChangeLevels = useCallback(
-    (event: React.FormEvent<IComboBox>, option?: IComboBoxOption, index?: number, value?: string): void => {
+    (event: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
       let selected = option?.selected;
       setSelectedLevels(prevSelectedKeys =>
         selected ? [...prevSelectedKeys, option!.key as Level] : prevSelectedKeys.filter(k => k !== option!.key),
@@ -82,14 +82,23 @@ const LectureDialog: React.FunctionComponent = () => {
     },
     [],
   );
+  const onChangeClassRooms = useCallback(
+    (event: React.FormEvent<IComboBox>, option?: IComboBoxOption): void => {
+      let selected = option?.selected;
+      setSelectedClassRooms(prevSelectedKeys =>
+        selected ? [...prevSelectedKeys, option!.key as Level] : prevSelectedKeys.filter(k => k !== option!.key),
+      );
+    },
+    [],
+  );
 
 	const isDisabled = () => {
-		const unvalidFields = Object.entries(lectureInputs).filter(([key, value]) => {
+		const invalidFields = Object.entries(lectureInputs).filter(([key, value]) => {
 			// 필수 요소가 채워지지 않은 경우
 			return ["title", "lectureNo", "sortKey", "vimeoUrl"].includes(key) ? value.length < 1 : false;
 		}).map(([key, _]) => key);
 		
-		if (unvalidFields.length > 0) {
+		if (invalidFields.length > 0) {
 			return true;
 		}
 
@@ -104,8 +113,9 @@ const LectureDialog: React.FunctionComponent = () => {
 		const doc: Lecture = {
 			teachers: selectedTeachers,
 			levels: selectedLevels,
-			room: 'temp-room-id',
-			description: lectureInputs.discription,
+			// TODO: 선택으로 변경
+			classRoom: 'temp-room-id',
+			description: lectureInputs.description,
 			videoUrl: lectureInputs.vimeoUrl,
 			sortKey: Number(lectureInputs.sortKey),
 			lectureNo: Number(lectureInputs.lectureNo),
@@ -113,7 +123,7 @@ const LectureDialog: React.FunctionComponent = () => {
 			subTitle: lectureInputs.subTitle
 		};
 		try {
-			await fbCreateDoc('lecture', undefined, doc);
+			await createDoc('lecture', undefined, doc);
 			toggleHideDialog();
 		} catch (error) {
 			console.error(error);
@@ -154,9 +164,9 @@ const LectureDialog: React.FunctionComponent = () => {
 					placeholder="소제목"
 				/>
 				<TextField
-					label="discription"
-					name="discription"
-					value={lectureInputs.discription}
+					label="description"
+					name="description"
+					value={lectureInputs.description}
 					onChange={onChangeLectureInputs}
 					type="text"
 					placeholder="추가 안내사항"
@@ -209,6 +219,14 @@ const LectureDialog: React.FunctionComponent = () => {
           options={initialLevelOptions}
 					errorMessage={selectedLevels.length === 0 ? '필수 필드입니다.' : undefined}
           onChange={onChangeLevels}
+        />
+        <ComboBox
+          label="classRooms"
+          multiSelect
+          selectedKey={selectedClassRooms}
+          options={initialClassRoomOptions}
+					errorMessage={selectedClassRooms.length === 0 ? '필수 필드입니다.' : undefined}
+          onChange={onChangeClassRooms}
         />
 				<DialogFooter>
 					<PrimaryButton onClick={submit} disabled={isDisabled()} text="추가" />

@@ -9,7 +9,7 @@ import React, {
 
 import styles from "./EditLevel.module.scss";
 
-const MultiSelectBox = forwardRef((props: any, ref: any) => {
+const LevelSelectBox = forwardRef((props: any, ref: any) => {
 	const [value, setValue] = useState<string[]>(props.value);
 	const [editing, setEditing] = useState(props.value);
 	const refContainer = useRef(null);
@@ -79,4 +79,4 @@ const MultiSelectBox = forwardRef((props: any, ref: any) => {
 	);
 });
 
-export default MultiSelectBox;
+export default LevelSelectBox;

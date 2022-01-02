@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./Navigation.module.scss";
 import icoMenu from "../../assets/images/ico-menu.svg";
 import icoClose from "../../assets/images/ico-close.svg";
-import { signOutService } from "../../firebase";
+import { signOutService } from "../../firebase-auth";
 
 const Navigation = () => {
 	const [onMenuModal, setOnMenuModal] = useState(false);
@@ -24,7 +24,8 @@ const Navigation = () => {
 
 	const navItems = [
 		{ name: "Home", route: "/home", forAdmin: true },
-		{ name: "Class room", route: "/class-room", forAdmin: true },
+		{ name: "Lecture", route: "/lecture", forAdmin: true },
+		{ name: "ClassRoom", route: "/class-room", forAdmin: true },
 		{ name: "User", route: "/user", forAdmin: true },
 	];
 

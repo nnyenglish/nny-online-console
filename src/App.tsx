@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { onAuthStateChangedService } from './firebase';
+import { onAuthStateChangedService } from './firebase-auth';
 
 import AppRouter from './Router';
 import './App.scss';

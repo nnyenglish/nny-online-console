@@ -42,7 +42,7 @@ export interface Lecture {
   sortKey: number;
   /** 1 */
   lectureNo: number;
-  room: string;
+  classRoom: string;
 
   title: string;
   subTitle: string;
@@ -88,6 +88,8 @@ export interface ClassRoom {
   teachers: string[];
   // 수강 가능한 레벨
   levels: Level[];
+
+  description: string;
 }
 
 // 관계를 생각해보자

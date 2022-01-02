@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
-import { signInService } from "../../firebase";
+import { signInService } from "../../firebase-auth";
 import styles from "./Auth.module.scss";
 
 const Auth = () => {
