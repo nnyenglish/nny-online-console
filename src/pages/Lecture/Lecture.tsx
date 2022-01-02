@@ -9,7 +9,7 @@ import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
 
 import { ClassRoomDoc, LectureDoc } from "../../lib/1/schema";
 import LectureDialog from "../../components/LectureDialog/LectureDialog";
-import AgMultiSelectBox from "../../components/AgMultiSelectBox/AgMultiSelectBox";
+import { AgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
 import { getDocsArrayWithWhere, queryCollection, updateDoc } from "../../firebase";
 
 const lectureCollectionPath = "lecture";

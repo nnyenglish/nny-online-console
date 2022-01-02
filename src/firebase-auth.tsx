@@ -1,3 +1,4 @@
+// TODO: firebase로 이동시켜야한다
 import { initializeApp } from "firebase/app";
 import {
 	getFirestore,

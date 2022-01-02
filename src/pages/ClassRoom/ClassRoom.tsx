@@ -7,7 +7,7 @@ import { queryCollection, updateDoc } from "../../firebase";
 import { ClassRoomDoc } from "../../lib/1/schema";
 import { Levels, Teachers } from "../../lib/1/string-map";
 
-import AgMultiSelectBox from "../../components/AgMultiSelectBox/AgMultiSelectBox";
+import { AgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
 import ClassRoomDialog from "../../components/ClassRoomDialog/ClassRoomDialog";
 
 const classRoomCollectionPath = "classRoom";
