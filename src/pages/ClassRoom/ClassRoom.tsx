@@ -83,6 +83,14 @@ const ClassRoom = () => {
 						valueSetter={valueSetter}
 					/>
 					<AgGridColumn
+						field="price"
+						// TODO: number 포멧팅
+						type="number"
+						headerName="수강료"
+						editable={true}
+						valueSetter={valueSetter}
+					/>
+					<AgGridColumn
 						field="roomName"
 						headerName="강의실 이름"
 						editable={true}
@@ -112,8 +120,9 @@ const ClassRoom = () => {
 						field="description"
 						headerName="설명"
 						tooltipField="description"
-						cellStyle={() => ({ "white-space": "normal" })}
 						editable={true}
+						cellEditor="agLargeTextCellEditor"
+            minWidth={420}
 						valueSetter={valueSetter}
 					/>
 				</AgGridReact>

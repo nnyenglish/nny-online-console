@@ -34,6 +34,7 @@ const ClassRoomDialog: React.FunctionComponent = () => {
 		roomName: "",
 		thumbnail: "",
 		description: "",
+		price: "",
 	});
 	const [selectedTeachers, setSelectedTeachers] = useState<string[]>(["Paul"]);
 	const [selectedLevels, setSelectedLevels] = useState<Level[]>(["EVERYONE"]);
@@ -116,6 +117,7 @@ const ClassRoomDialog: React.FunctionComponent = () => {
 			thumbnail: ClassRoomInputs.thumbnail,
 			teachers: selectedTeachers,
 			levels: selectedLevels,
+			price: Number(ClassRoomInputs.price),
 			description: ClassRoomInputs.description,
 		};
 		const id = ClassRoomInputs.roomName

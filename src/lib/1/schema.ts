@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase/firestore';
+import { FieldValue, Timestamp } from 'firebase/firestore';
 
 export interface UserDoc {
   _id: string;
@@ -17,9 +17,23 @@ export interface UserDoc {
   roleGuest?: boolean;
   roleStudent?: boolean;
 
+  level?: Level;
+
   classRooms: string[];
   // 결제를 원하는 classRoom을 넣는다.
   cart: string[];
+
+  lectures: { [lectureId: string]: {
+    /**
+     * 마지막으로 시청한 타임라인 좌표(seconds)
+     * 1.123
+     */
+    currentTime?: number;
+    /** 총 시청 시간(seconds) */
+    playTime?: FieldValue;
+    /** 90% 이상 시청하면 완료로 간주한다. */
+    completed?: boolean;
+  }};
 }
 
 export interface UserDocs {
@@ -90,6 +104,7 @@ export interface ClassRoom {
   levels: Level[];
 
   description: string;
+  price: number;
 }
 
 // 관계를 생각해보자

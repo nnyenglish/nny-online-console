@@ -144,8 +144,9 @@ const Lecture = () => {
 						field="description"
 						headerName="설명"
 						tooltipField="description"
-						cellStyle={() => ({ "white-space": "normal" })}
 						editable={true}
+						cellEditor="agLargeTextCellEditor"
+						minWidth={420}
 						valueSetter={valueSetter}
 					/>
 				</AgGridReact>
