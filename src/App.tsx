@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { onAuthStateChangedService } from './firebase-auth';
-
-import AppRouter from './Router';
-import './App.scss';
+import { useEffect, useState } from 'react';
 import { initializeIcons } from '@fluentui/react';
 
+import AppRouter from './Router';
+import { FirebaseManager } from './lib/2/firebase-manager';
+
+import './App.scss';
+
 initializeIcons();
+const firebaseManager = FirebaseManager.getInstance();
 
 function App() {
   const [init, setInit] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    onAuthStateChangedService((user) => {
+    const subscription = firebaseManager.observeAuthState().subscribe(user => {
       if (user) {
         setIsLoggedIn(true);
       } else {
@@ -20,6 +22,10 @@ function App() {
       }
       setInit(true);
     });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

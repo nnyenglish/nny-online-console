@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { onSnapshot } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { ColDef, ValueSetterParams } from "ag-grid-community";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 
-import { queryCollection, updateDoc } from "../../firebase";
 import { ClassRoomDoc } from "../../lib/1/schema";
 import { Levels, Teachers } from "../../lib/1/string-map";
+import { FirebaseManager } from "../../lib/2/firebase-manager";
 
 import { AgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
 import ClassRoomDialog from "../../components/ClassRoomDialog/ClassRoomDialog";
 
+const firebaseManager = FirebaseManager.getInstance();
 const classRoomCollectionPath = "classRoom";
+
 const defaultColDef: ColDef = {
 	flex: 1,
 	minWidth: 100,
@@ -25,16 +26,13 @@ const ClassRoom = () => {
 	const [rowData, setRowData] = useState<ClassRoomDoc[]>([]);
 
 	useEffect(() => {
-		const query = queryCollection<ClassRoomDoc>(classRoomCollectionPath, []);
-		const unsubscribe = onSnapshot(query, (snapshot) => {
-			const docs = snapshot.docs.map((doc) => doc.data());
+		const classRoomSubscription = firebaseManager.observe<ClassRoomDoc>(classRoomCollectionPath, []).subscribe(docs => {
 			docs.sort((a, b) => b.sortKey - a.sortKey);
 			setRowData(docs);
 		});
 
 		return () => {
-			console.log("unsubscribe");
-			unsubscribe();
+			classRoomSubscription.unsubscribe();
 		};
 	}, [setRowData]);
 
@@ -42,7 +40,7 @@ const ClassRoom = () => {
 		const lecture = props.data as ClassRoomDoc;
 		const fieldPath = props.colDef.field;
 		if (fieldPath) {
-			updateDoc(classRoomCollectionPath, lecture._id, {
+			firebaseManager.updateDoc(classRoomCollectionPath, lecture._id, {
 				[fieldPath]: props.newValue,
 			});
 			return true;

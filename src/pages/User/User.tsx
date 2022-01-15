@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { onSnapshot } from "@firebase/firestore";
+import { useEffect, useState } from "react";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { ColDef, ValueSetterParams } from "ag-grid-community";
 
 import { UserDoc } from "../../lib/1/schema";
+import { FirebaseManager } from "../../lib/2/firebase-manager";
 
 import "ag-grid-enterprise";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
-import { queryCollection, updateDoc } from "../../firebase";
+
 import { ClassRoomAgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
 
+const firebaseManager = FirebaseManager.getInstance();
 const userCollectionPath = "user";
 
 const User = () => {
@@ -19,17 +20,12 @@ const User = () => {
 	console.log(gridColumnApi);
 
 	useEffect(() => {
-		const query = queryCollection(userCollectionPath, []);
-		const unsubscribe = onSnapshot(query, (snapshot) => {
-			const docs = snapshot.docs.map((doc) => doc.data() as UserDoc);
+		const subscription = firebaseManager.observe<UserDoc>(userCollectionPath, []).subscribe(docs => {
 			docs.sort();
 			setRowData(docs);
-		});
+		})
 
-		return () => {
-			console.log("unsubscribe!");
-			unsubscribe();
-		};
+		return () => subscription.unsubscribe();
 	}, [setRowData]);
 
 	const onGridReady = (params: any) => {
@@ -48,7 +44,7 @@ const User = () => {
 		const user = props.data as UserDoc;
 		const fieldPath = props.colDef.field;
 		if (fieldPath) {
-			updateDoc(userCollectionPath, user._id, { [fieldPath]: props.newValue });
+			firebaseManager.updateDoc(userCollectionPath, user._id, { [fieldPath]: props.newValue });
 			return true;
 		}
 		return false;

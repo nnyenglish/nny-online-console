@@ -1,6 +1,10 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import { signInService } from "../../firebase-auth";
+import { ChangeEvent, FormEvent, useState } from "react";
+
+import { FirebaseManager } from "../../lib/2/firebase-manager";
+
 import styles from "./Auth.module.scss";
+
+const firebaseManager = FirebaseManager.getInstance();
 
 const Auth = () => {
 	const [email, setEmail] = useState("");
@@ -23,7 +27,7 @@ const Auth = () => {
 		event.preventDefault();
 		setIsLoading(true);
 		try {
-			await signInService(email, password);
+			await firebaseManager.signIn(email, password);
 		} catch (error) {
 			setError((error as Error).message);
 		}

@@ -10,9 +10,11 @@ import {
 	TextField,
 } from "@fluentui/react";
 
-import { createDoc } from "../../firebase";
 import { ClassRoom, Level } from "../../lib/1/schema";
 import { Levels, Teachers } from "../../lib/1/string-map";
+import { FirebaseManager } from "../../lib/2/firebase-manager";
+
+const firebaseManager = FirebaseManager.getInstance();
 
 const modalProps: IModalProps = {
 	isBlocking: true,
@@ -125,7 +127,7 @@ const ClassRoomDialog: React.FunctionComponent = () => {
 			.trim()
 			.replace(/\s+/g, "-");
 		try {
-			await createDoc("classRoom", id, doc);
+			await firebaseManager.createDoc("classRoom", id, doc);
 			toggleHideDialog();
 		} catch (error) {
 			console.error(error);

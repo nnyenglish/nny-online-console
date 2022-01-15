@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
+import { FirebaseManager } from "../../lib/2/firebase-manager";
+
 import styles from "./Navigation.module.scss";
 import icoMenu from "../../assets/images/ico-menu.svg";
 import icoClose from "../../assets/images/ico-close.svg";
-import { signOutService } from "../../firebase-auth";
+
+const firebaseManager = FirebaseManager.getInstance();
 
 const Navigation = () => {
 	const [onMenuModal, setOnMenuModal] = useState(false);
 	const navigate = useNavigate();
   const onLogOutClick = () => {
-    signOutService();
+    firebaseManager.signOut();
     navigate("/");
   }
 

@@ -1,4 +1,4 @@
-import React, {
+import {
 	ChangeEvent,
 	forwardRef,
 	useEffect,
@@ -6,10 +6,12 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import { getDocsArrayWithWhere } from "../../firebase";
 import { ClassRoomDoc } from "../../lib/1/schema";
+import { FirebaseManager } from "../../lib/2/firebase-manager";
 
 import styles from "./AgMultiSelectBox.module.scss";
+
+const firebaseManager = FirebaseManager.getInstance();
 
 const AgMultiSelectBox = (options: string[], defaultValue: string) => {
 	const selectBoxRef = forwardRef((props: any, ref: any) => {
@@ -101,7 +103,7 @@ const ClassRoomAgMultiSelectBox = forwardRef((props: any, ref: any) => {
 			props.api.stopEditing();
 		}
 
-		getDocsArrayWithWhere<ClassRoomDoc>('classRoom', []).then(docs => {
+		firebaseManager.getDocsArrayWithWhere<ClassRoomDoc>('classRoom', []).then(docs => {
 			setClassRooms(docs.map(doc => doc._id));
 		})
 

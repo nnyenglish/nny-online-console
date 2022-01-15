@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { onSnapshot } from "@firebase/firestore";
+import { useEffect, useState } from "react";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { ColDef, ValueSetterParams } from "ag-grid-community";
 
@@ -8,10 +7,12 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
 
 import { ClassRoomDoc, LectureDoc } from "../../lib/1/schema";
+import { FirebaseManager } from "../../lib/2/firebase-manager";
+
 import LectureDialog from "../../components/LectureDialog/LectureDialog";
 import { AgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
-import { getDocsArrayWithWhere, queryCollection, updateDoc } from "../../firebase";
 
+const firebaseManager = FirebaseManager.getInstance();
 const lectureCollectionPath = "lecture";
 const classRoomCollectionPath = "classRoom";
 const levelSelectBox = AgMultiSelectBox(
@@ -25,22 +26,16 @@ const Lecture = () => {
 	// const [gridColumnApi, setGridColumnApi] = useState<any>(null);
 
 	useEffect(() => {
-		const query = queryCollection<LectureDoc>(lectureCollectionPath, []);
-		const unsubscribe = onSnapshot(query, (snapshot) => {
-			const docs = snapshot.docs.map((doc) => doc.data());
+		const subscription = firebaseManager.observe<LectureDoc>(lectureCollectionPath, []).subscribe(docs => {
 			docs.sort((a, b) => b.sortKey - a.sortKey);
-			console.log(docs);
 			setRowData(docs);
 		});
 
-		getDocsArrayWithWhere<ClassRoomDoc>(classRoomCollectionPath, []).then(classRooms => {
+		firebaseManager.getDocsArrayWithWhere<ClassRoomDoc>(classRoomCollectionPath, []).then(classRooms => {
 			setClassRoomList(classRooms.map(cr => cr._id));
 		});
 
-		return () => {
-			console.log("unsubscribe!");
-			unsubscribe();
-		};
+		return () => subscription.unsubscribe();
 	}, [setRowData]);
 
 	// const onGridReady = (params: any) => {
@@ -59,7 +54,7 @@ const Lecture = () => {
 		const lecture = props.data as LectureDoc;
 		const fieldPath = props.colDef.field;
 		if (fieldPath) {
-			updateDoc(lectureCollectionPath, lecture._id, {
+			firebaseManager.updateDoc(lectureCollectionPath, lecture._id, {
 				[fieldPath]: props.newValue,
 			});
 			return true;

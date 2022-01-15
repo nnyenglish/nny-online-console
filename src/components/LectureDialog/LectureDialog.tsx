@@ -4,9 +4,11 @@ import { PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
 import { useBoolean } from "@fluentui/react-hooks";
 import { ComboBox, IComboBox, IComboBoxOption, IModalProps, TextField } from "@fluentui/react";
 
-import { createDoc, getDocsArrayWithWhere } from "../../firebase";
 import { ClassRoomDoc, Lecture, Level } from "../../lib/1/schema";
 import { Levels, Teachers } from "../../lib/1/string-map";
+import { FirebaseManager } from "../../lib/2/firebase-manager";
+
+const firebaseManager = FirebaseManager.getInstance();
 
 const classRoomCollectionPath = "classRoom";
 const modalProps: IModalProps = {
@@ -35,7 +37,7 @@ const LectureDialog: React.FunctionComponent = () => {
 	const [selectedClassRooms, setSelectedClassRooms] = useState<string[]>([]);
 
 	useEffect(() => {
-		getDocsArrayWithWhere<ClassRoomDoc>(classRoomCollectionPath, []).then(classRooms => {
+		firebaseManager.getDocsArrayWithWhere<ClassRoomDoc>(classRoomCollectionPath, []).then(classRooms => {
 			setInitialClassRoomOptions(classRooms.map(cr => ({key: cr._id, text: cr.roomName})));
 		});
 	}, []);
@@ -123,7 +125,7 @@ const LectureDialog: React.FunctionComponent = () => {
 			subTitle: lectureInputs.subTitle
 		};
 		try {
-			await createDoc('lecture', undefined, doc);
+			await firebaseManager.createDoc('lecture', undefined, doc);
 			toggleHideDialog();
 		} catch (error) {
 			console.error(error);
