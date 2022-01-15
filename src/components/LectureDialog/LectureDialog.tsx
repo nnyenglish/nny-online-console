@@ -8,6 +8,8 @@ import { ClassRoomDoc, Lecture, Level } from "../../lib/1/schema";
 import { Levels, Teachers } from "../../lib/1/string-map";
 import { FirebaseManager } from "../../lib/2/firebase-manager";
 
+import useGetDocsArray from "../../hooks/use-get-docs-array";
+
 const firebaseManager = FirebaseManager.getInstance();
 
 const classRoomCollectionPath = "classRoom";
@@ -22,6 +24,7 @@ const initialLevelOptions = Levels.map((v) => ({ key: v, text: v }));
 const urlRegex = new RegExp(/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/ig);
 
 const LectureDialog: React.FunctionComponent = () => {
+	const { getDocsArray: getClassRoomDocs } = useGetDocsArray<ClassRoomDoc>();
 	const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
 	const [initialClassRoomOptions, setInitialClassRoomOptions] = useState<{key: string, text: string }[]>([]);
 	const [lectureInputs, setLectureInputs] = useState({
@@ -35,12 +38,14 @@ const LectureDialog: React.FunctionComponent = () => {
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>(["Paul"]);
   const [selectedLevels, setSelectedLevels] = useState<Level[]>(["EVERYONE"]);
 	const [selectedClassRooms, setSelectedClassRooms] = useState<string[]>([]);
+	
 
 	useEffect(() => {
-		firebaseManager.getDocsArrayWithWhere<ClassRoomDoc>(classRoomCollectionPath, []).then(classRooms => {
-			setInitialClassRoomOptions(classRooms.map(cr => ({key: cr._id, text: cr.roomName})));
+		getClassRoomDocs(classRoomCollectionPath, [], (docs) => {
+			console.log('setInitialClassRoomOptions');
+			setInitialClassRoomOptions(docs.map(doc => ({key: doc._id, text: doc.roomName})));
 		});
-	}, []);
+	}, [getClassRoomDocs]);
 
 	const onChangeLectureInputs = useCallback(
 		(

@@ -23,25 +23,25 @@ const levelSelectBox = AgMultiSelectBox(
 
 const Lecture = () => {
 	const [rowData, setRowData] = useState<LectureDoc[]>([]);
-	const [classRoomList, setClassRoomList] = useState<string[]>();
+	const [classRoomIdList, setClassRoomIdList] = useState<string[]>();
 	// const [gridColumnApi, setGridColumnApi] = useState<any>(null);
 
 	const { getDocsArray: getClassRoomDocs } = useGetDocsArray<ClassRoomDoc>();
 
 	useEffect(() => {
-		const subscription = firebaseManager.observe<LectureDoc>(lectureCollectionPath, []).subscribe(docs => {
-			docs.sort((a, b) => b.sortKey - a.sortKey);
-			setRowData(docs);
+		const subscription = firebaseManager
+			.observe<LectureDoc>(lectureCollectionPath, [])
+			.subscribe((docs) => {
+				docs.sort((a, b) => b.sortKey - a.sortKey);
+				setRowData(docs);
+			});
+
+		getClassRoomDocs(classRoomCollectionPath, [], (docs) => {
+			setClassRoomIdList(docs.map((doc) => doc._id));
 		});
 
-		const getClassRoomIdList = (docs: ClassRoomDoc[]) => {
-			setClassRoomList(docs.map(doc => doc._id));
-		};
-
-		getClassRoomDocs(classRoomCollectionPath, [], getClassRoomIdList);
-
 		return () => subscription.unsubscribe();
-	}, [getClassRoomDocs]);
+	}, [getClassRoomDocs, setRowData]);
 
 	// const onGridReady = (params: any) => {
 	// 	setGridColumnApi(params.columnApi);
@@ -82,7 +82,7 @@ const Lecture = () => {
 					rowData={rowData}
 					stopEditingWhenCellsLoseFocus={true}
 					frameworkComponents={{
-						multiLevelSelectBoxEditor: levelSelectBox
+						multiLevelSelectBoxEditor: levelSelectBox,
 					}}
 				>
 					<AgGridColumn
@@ -96,7 +96,7 @@ const Lecture = () => {
 						headerName="강의실"
 						editable={true}
 						cellEditor="agRichSelectCellEditor"
-            cellEditorParams={{ values: classRoomList }}
+						cellEditorParams={{ values: classRoomIdList }}
 						valueSetter={valueSetter}
 						rowGroup={true}
 					/>
