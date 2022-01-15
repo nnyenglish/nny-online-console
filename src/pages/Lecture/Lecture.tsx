@@ -11,6 +11,7 @@ import { FirebaseManager } from "../../lib/2/firebase-manager";
 
 import LectureDialog from "../../components/LectureDialog/LectureDialog";
 import { AgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
+import useGetDocsArray from "../../hooks/use-get-docs-array";
 
 const firebaseManager = FirebaseManager.getInstance();
 const lectureCollectionPath = "lecture";
@@ -25,18 +26,22 @@ const Lecture = () => {
 	const [classRoomList, setClassRoomList] = useState<string[]>();
 	// const [gridColumnApi, setGridColumnApi] = useState<any>(null);
 
+	const { getDocsArray: getClassRoomDocs } = useGetDocsArray<ClassRoomDoc>();
+
 	useEffect(() => {
 		const subscription = firebaseManager.observe<LectureDoc>(lectureCollectionPath, []).subscribe(docs => {
 			docs.sort((a, b) => b.sortKey - a.sortKey);
 			setRowData(docs);
 		});
 
-		firebaseManager.getDocsArrayWithWhere<ClassRoomDoc>(classRoomCollectionPath, []).then(classRooms => {
-			setClassRoomList(classRooms.map(cr => cr._id));
-		});
+		const getClassRoomIdList = (docs: ClassRoomDoc[]) => {
+			setClassRoomList(docs.map(doc => doc._id));
+		};
+
+		getClassRoomDocs(classRoomCollectionPath, [], getClassRoomIdList);
 
 		return () => subscription.unsubscribe();
-	}, [setRowData]);
+	}, [getClassRoomDocs]);
 
 	// const onGridReady = (params: any) => {
 	// 	setGridColumnApi(params.columnApi);
