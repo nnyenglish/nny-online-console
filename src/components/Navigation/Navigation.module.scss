@@ -1,0 +1,134 @@
+header {
+  font-family: 'Catamaran', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h1 {
+  margin: 0;
+  padding: 0 8px;
+  font-weight: 400;
+  overflow: hidden;
+  font-size: 16px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.82);
+}
+
+.pc-status {
+  display: none;
+}
+
+.icon-btn {
+  padding: 16px;
+  font: 0/0 transparent;
+
+  img {
+    height: 24px;
+    width: 24px;
+  }
+}
+
+.btn-menu {
+  background-color: #fff;
+  transition: opacity 300ms;
+
+  &.modal-on {
+    opacity: 0;
+  }
+}
+
+.btn-close {
+  position: fixed;
+  right: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding-left: 24px;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.82);
+  &.modal-on {
+    display: block;
+  }
+}
+
+.pc-nav {
+  display: none;
+}
+
+.mobile-nav {
+  margin-top: 75px;
+
+  a {
+    display: block;
+    margin-bottom: 1em;
+    color: white;
+    font-weight: 400;
+  }
+}
+
+.active-nav {
+  border-bottom: 1px solid white;
+}
+
+@media screen and (min-width: 767px) {
+  header {
+    padding: 20px 34px 0;
+    // align-items: flex-start;
+  }
+
+  .btn-menu {
+    display: none;
+  }
+
+  .pc-status {
+    display: flex;
+  }
+
+  .pc-nav {
+    display: flex;
+    padding: 20px 0;
+    font-size: 18px;
+    font-weight: 900;
+
+    a {
+      color: rgba(0, 0, 0, 0.82);
+      margin-right: 24px;
+    }
+  }
+
+  .thin {
+    font-weight: 400;
+  }
+
+  .divider {
+    position: relative;
+    margin-left: 24px;
+    &::before {
+      position: absolute;
+      left: -24px;
+      content: '|';
+    }
+  }
+
+  .app-container {
+    padding: 34px;
+  }
+
+  .active-nav {
+    border-bottom: 3px solid rgba(0, 0, 0, 0.82);
+  }
+}
