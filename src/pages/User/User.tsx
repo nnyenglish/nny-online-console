@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { ColDef, ValueSetterParams } from "ag-grid-community";
 
@@ -10,6 +10,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-balham-dark.css";
 
 import { ClassRoomAgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
+import DeleteUserDialog from "../../components/DeleteUserDialog/DeleteUserDialog";
 
 const firebaseManager = FirebaseManager.getInstance();
 const userCollectionPath = "user";
@@ -50,6 +51,16 @@ const User = () => {
 		return false;
 	};
 
+	const deleteUser = useCallback(async (user: UserDoc) => {
+		const updateData: Partial<UserDoc> = { deleted: true };
+		return firebaseManager.updateDoc(userCollectionPath, user._id, updateData);
+	}, []);
+
+	const undoUser = useCallback(async (user: UserDoc) => {
+		const updateData: Partial<UserDoc> = { deleted: false };
+		return firebaseManager.updateDoc(userCollectionPath, user._id, updateData);
+	}, []);
+
 	return (
 		<div className="pageContainer">
 			<div className="ag-theme-balham-dark agContainer">
@@ -64,6 +75,24 @@ const User = () => {
 						multiClassRoomSelectBoxEditor: ClassRoomAgMultiSelectBox,
 					}}
 				>
+					<AgGridColumn
+						headerName="명령"
+						cellRendererFramework={(props: { data: UserDoc }) => {
+							const options = props.data.deleted === true ? {
+								callBack: () => undoUser(props.data),
+								buttonText: "복구",
+								title: "계정을 복구할까요?",
+								subText: "복구 시 서비스를 이용할 수 있습니다."
+							} : {
+								callBack: () => deleteUser(props.data),
+								buttonText: "삭제",
+								title: "계정을 삭제하시겠습니까?",
+								subText: "삭제 시 서비스 이용이 불가능합니다."
+							};
+
+							return DeleteUserDialog(options)
+						}}
+					/>
 					<AgGridColumn
 						field="_timeCreate"
 						headerName="생성일"

@@ -28,7 +28,7 @@ const urlRegex = new RegExp(
 	/[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gi
 );
 
-const ClassRoomDialog: React.FunctionComponent = () => {
+const ClassRoomDialog: React.FC = () => {
 	const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
 	const [ClassRoomInputs, setClassRoomInputs] = useState({
 		sortKey: "",

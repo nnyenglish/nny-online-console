@@ -4,6 +4,7 @@ export interface UserDoc {
   _id: string;
   _timeCreate: Timestamp;
   _timeUpdate?: Timestamp;
+  deleted?: boolean;
 
   email: string;
   // level: string;
