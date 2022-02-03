@@ -67,7 +67,13 @@ export interface Lecture {
   levels: Level[];
 
   /** 강의자료 id */
-  materials?: string[];
+  files?: {
+    [key: string]: {
+      downloadURL: string;
+      fullPath: string;
+      fileName: string;
+    }
+  };
 }
 
 export type MaterialDoc = Material & {

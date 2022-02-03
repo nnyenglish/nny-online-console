@@ -10,8 +10,10 @@ import { ClassRoomDoc, LectureDoc } from "../../lib/1/schema";
 import { FirebaseManager } from "../../lib/2/firebase-manager";
 
 import LectureDialog from "../../components/LectureDialog/LectureDialog";
+import FileUploadDialog from "../../components/FileUploadDialog/FileUploadDialog";
 import { AgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
 import useGetDocsArray from "../../hooks/use-get-docs-array";
+// import { filter } from "rxjs";
 
 const firebaseManager = FirebaseManager.getInstance();
 const lectureCollectionPath = "lecture";
@@ -31,6 +33,7 @@ const Lecture = () => {
 	useEffect(() => {
 		const subscription = firebaseManager
 			.observe<LectureDoc>(lectureCollectionPath, [])
+			// TODO: 파일 관련 업데이트는 무시하도록 변경
 			.subscribe((docs) => {
 				docs.sort((a, b) => b.sortKey - a.sortKey);
 				setRowData(docs);
@@ -75,7 +78,7 @@ const Lecture = () => {
 			<div className="ag-theme-balham-dark agContainer">
 				<AgGridReact
 					defaultColDef={defaultColDef}
-					groupDefaultExpanded={1}
+					groupDefaultExpanded={2}
 					groupDisplayType={"custom"}
 					suppressScrollOnNewData={true}
 					// onGridReady={onGridReady}
@@ -94,11 +97,29 @@ const Lecture = () => {
 					<AgGridColumn
 						field="classRoom"
 						headerName="강의실"
+						hide={true}
 						editable={true}
 						cellEditor="agRichSelectCellEditor"
 						cellEditorParams={{ values: classRoomIdList }}
 						valueSetter={valueSetter}
 						rowGroup={true}
+					/>
+					<AgGridColumn
+						headerName="명령"
+						minWidth={120}
+						cellRendererFramework={(props: { data: LectureDoc }) => {
+							if (props.data) {
+								return FileUploadDialog({ lecture: props.data })
+							} else {
+								return <div> </div>
+							}
+						}}
+					/>
+					<AgGridColumn
+						field="title"
+						headerName="제목"
+						editable={true}
+						valueSetter={valueSetter}
 					/>
 					<AgGridColumn
 						field="levels"
@@ -119,12 +140,6 @@ const Lecture = () => {
 						headerName="강의번호"
 						editable={true}
 						maxWidth={100}
-						valueSetter={valueSetter}
-					/>
-					<AgGridColumn
-						field="title"
-						headerName="제목"
-						editable={true}
 						valueSetter={valueSetter}
 					/>
 					<AgGridColumn

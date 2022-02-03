@@ -33,6 +33,7 @@ import {
 	Firestore,
 	Query,
 } from "firebase/firestore";
+import { FirebaseStorage, getStorage, StorageReference, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Observable } from "rxjs";
 
 import { sleep } from "../1/util";
@@ -70,6 +71,8 @@ export class FirebaseManager {
 	private static instance: FirebaseManager;
 	private auth: Auth;
 	private firestore: Firestore;
+	private storage: FirebaseStorage;
+	private storageRef: StorageReference;
 
 	// 최대 500개로 되어 있지만
 	// serverTimestamp() 는 1이 더 추가된다고 한다.
@@ -101,6 +104,28 @@ export class FirebaseManager {
 		firebase.initializeApp(firebaseConfig);
 		this.auth = getAuth();
 		this.firestore = getFirestore();
+		this.storage = getStorage();
+		this.storageRef = ref(this.storage, 'onlineClassFiles');
+	}
+
+	/**
+	 * @param path #, [, ], * 또는 ?는 사용하면 안된다.
+	 */
+	private getStorageRef(path: string) {
+		return ref(this.storageRef, path);
+	}
+
+	public uploadTask(path: string, file: File) {
+		if (!path || !file) {
+      throw new TypeError('path나 file이 없는 것 같아요');
+    }
+
+		const fileRef = this.getStorageRef(path);
+		return uploadBytesResumable(fileRef, file);
+	}
+
+	public setDownloadURL(ref: StorageReference) {
+		return getDownloadURL(ref);
 	}
 
 	public batchStart() {
