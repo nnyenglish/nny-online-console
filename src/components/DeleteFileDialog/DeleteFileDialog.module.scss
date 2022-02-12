@@ -1,0 +1,36 @@
+.inputBox {
+  label {
+    padding: 0.5em 0.725em;
+    border: 1px solid rgb(138, 136, 134);
+    border-radius: 2px;
+    display: inline-block;
+    &:hover {
+      border: 1px solid rgb(0, 120, 212);
+    }
+    &.disabled {
+      border: 1px solid rgb(138, 136, 134);
+      opacity: 0.5;
+    }
+  }
+  input {
+    opacity: 0;
+  }
+}
+
+.preview {
+  padding: 1em 0;
+}
+
+.deleteButton {
+  height: 24px;
+  min-width: 72px;
+  font-size: 12px;
+  margin: 2px 0;
+  border: 0;
+  font-weight: 700;
+  background-color: rgb(241, 29, 105);
+}
+
+.header {
+  margin-bottom: 1em;
+}

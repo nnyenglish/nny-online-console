@@ -33,7 +33,15 @@ import {
 	Firestore,
 	Query,
 } from "firebase/firestore";
-import { FirebaseStorage, getStorage, StorageReference, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import {
+	FirebaseStorage,
+	getStorage,
+	StorageReference,
+	ref,
+	uploadBytesResumable,
+	getDownloadURL,
+	deleteObject
+} from "firebase/storage";
 import { Observable } from "rxjs";
 
 import { sleep } from "../1/util";
@@ -117,11 +125,20 @@ export class FirebaseManager {
 
 	public uploadTask(path: string, file: File) {
 		if (!path || !file) {
-      throw new TypeError('path나 file이 없는 것 같아요');
-    }
+			throw new TypeError('path나 file이 없는 것 같아요');
+		}
 
 		const fileRef = this.getStorageRef(path);
 		return uploadBytesResumable(fileRef, file);
+	}
+
+	public deleteFile(path: string) {
+		if (!path) {
+			throw new TypeError('path가 없는 것 같아요');
+		}
+
+		const fileRef = this.getStorageRef(path);
+		return deleteObject(fileRef);
 	}
 
 	public setDownloadURL(ref: StorageReference) {
@@ -208,8 +225,8 @@ export class FirebaseManager {
 			id === undefined
 				? doc(collectionRef)
 				: idAsField
-				? doc(firestore, `${collectionPath}/${docData[id]}`)
-				: doc(firestore, `${collectionPath}/${id}`);
+					? doc(firestore, `${collectionPath}/${docData[id]}`)
+					: doc(firestore, `${collectionPath}/${id}`);
 
 		recoverTimestamp(docData);
 
@@ -275,8 +292,8 @@ export class FirebaseManager {
 			id === undefined
 				? doc(collectionRef)
 				: idAsField
-				? doc(firestore, `${collectionPath}/${docData[id]}`)
-				: doc(firestore, `${collectionPath}/${id}`);
+					? doc(firestore, `${collectionPath}/${docData[id]}`)
+					: doc(firestore, `${collectionPath}/${id}`);
 
 		recoverTimestamp(docData);
 

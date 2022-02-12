@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { ColDef, ValueSetterParams } from "ag-grid-community";
 
@@ -13,7 +13,7 @@ import LectureDialog from "../../components/LectureDialog/LectureDialog";
 import FileUploadDialog from "../../components/FileUploadDialog/FileUploadDialog";
 import { AgMultiSelectBox } from "../../components/AgMultiSelectBox/AgMultiSelectBox";
 import useGetDocsArray from "../../hooks/use-get-docs-array";
-// import { filter } from "rxjs";
+import DeleteFileDialog from "../../components/DeleteFileDialog/DeleteFileDialog";
 
 const firebaseManager = FirebaseManager.getInstance();
 const lectureCollectionPath = "lecture";
@@ -23,10 +23,29 @@ const levelSelectBox = AgMultiSelectBox(
 	"EVERYONE"
 );
 
+const defaultColDef: ColDef = {
+	flex: 1,
+	minWidth: 100,
+	sortable: true,
+	resizable: true,
+	autoHeight: true,
+};
+
+const valueSetter = (props: ValueSetterParams): boolean => {
+	const lecture = props.data as LectureDoc;
+	const fieldPath = props.colDef.field;
+	if (fieldPath) {
+		firebaseManager.updateDoc(lectureCollectionPath, lecture._id, {
+			[fieldPath]: props.newValue,
+		});
+		return true;
+	}
+	return false;
+};
+
 const Lecture = () => {
 	const [rowData, setRowData] = useState<LectureDoc[]>([]);
 	const [classRoomIdList, setClassRoomIdList] = useState<string[]>();
-	// const [gridColumnApi, setGridColumnApi] = useState<any>(null);
 
 	const { getDocsArray: getClassRoomDocs } = useGetDocsArray<ClassRoomDoc>();
 
@@ -34,6 +53,7 @@ const Lecture = () => {
 		const subscription = firebaseManager
 			.observe<LectureDoc>(lectureCollectionPath, [])
 			// TODO: 파일 관련 업데이트는 무시하도록 변경
+			// switchMap - unified-order.component
 			.subscribe((docs) => {
 				docs.sort((a, b) => b.sortKey - a.sortKey);
 				setRowData(docs);
@@ -46,29 +66,50 @@ const Lecture = () => {
 		return () => subscription.unsubscribe();
 	}, [getClassRoomDocs, setRowData]);
 
-	// const onGridReady = (params: any) => {
-	// 	setGridColumnApi(params.columnApi);
-	// };
 
-	const defaultColDef: ColDef = {
-		flex: 1,
-		minWidth: 100,
-		sortable: true,
-		resizable: true,
-		autoHeight: true,
-	};
+	// <AgGridColumn
+	// 	headerName="명령"
+	// 	minWidth={120}
+	// 	cellRendererFramework={(props: { data: LectureDoc }) => {
+	// 		if (props.data) {
+	// 			return FileUploadDialog({ lecture: props.data })
+	// 		} else {
+	// 			return <div> </div>
+	// 		}
+	// 	}}
+	// />
+	const detailCellRendererParams = useMemo(() => {
+		return {
+			autoHeight: true,
+			detailGridOptions: {
+				columnDefs: [
+					{ headerName: '명령', maxWidth: 130, cellRendererFramework: (props: { data: { lecture: LectureDoc, fullPath: string, fileName: string } }) => {
+						if (props.data?.lecture) {
+							return DeleteFileDialog({ lecture: props.data.lecture, fullPath: props.data.fullPath, fileName: props.data.fileName });
+						} else {
+							return <div> </div>
+						}
+					}},
+					{ field: 'fileName' },
+					{ field: 'downloadURL' },
+					{ field: 'fullPath', maxWidth: 240 },
+				],
+				defaultColDef: {
+          flex: 1,
 
-	const valueSetter = (props: ValueSetterParams): boolean => {
-		const lecture = props.data as LectureDoc;
-		const fieldPath = props.colDef.field;
-		if (fieldPath) {
-			firebaseManager.updateDoc(lectureCollectionPath, lecture._id, {
-				[fieldPath]: props.newValue,
-			});
-			return true;
-		}
-		return false;
-	};
+        },
+			},
+			getDetailRowData: (params: any) => {
+				// detail grid에 데이터 공급
+				const lecture: LectureDoc = params.data;
+				const detailRowData = lecture.files ? Object.values(lecture.files).map(files => ({
+					...files,
+					lecture
+				})) : [];
+				params.successCallback(detailRowData);
+			}
+		};
+	}, []);
 
 	return (
 		<div className="pageContainer">
@@ -78,7 +119,7 @@ const Lecture = () => {
 			<div className="ag-theme-balham-dark agContainer">
 				<AgGridReact
 					defaultColDef={defaultColDef}
-					groupDefaultExpanded={2}
+					groupDefaultExpanded={1}
 					groupDisplayType={"custom"}
 					suppressScrollOnNewData={true}
 					// onGridReady={onGridReady}
@@ -87,6 +128,10 @@ const Lecture = () => {
 					frameworkComponents={{
 						multiLevelSelectBoxEditor: levelSelectBox,
 					}}
+
+					// detailGrid를 쓰기위함
+					masterDetail={true}
+					detailCellRendererParams={detailCellRendererParams}
 				>
 					<AgGridColumn
 						headerName="강의실"
@@ -105,21 +150,11 @@ const Lecture = () => {
 						rowGroup={true}
 					/>
 					<AgGridColumn
-						headerName="명령"
-						minWidth={120}
-						cellRendererFramework={(props: { data: LectureDoc }) => {
-							if (props.data) {
-								return FileUploadDialog({ lecture: props.data })
-							} else {
-								return <div> </div>
-							}
-						}}
-					/>
-					<AgGridColumn
 						field="title"
 						headerName="제목"
 						editable={true}
 						valueSetter={valueSetter}
+						cellRenderer='agGroupCellRenderer'
 					/>
 					<AgGridColumn
 						field="levels"
@@ -163,6 +198,17 @@ const Lecture = () => {
 						cellEditor="agLargeTextCellEditor"
 						minWidth={420}
 						valueSetter={valueSetter}
+					/>
+					<AgGridColumn
+						headerName="명령"
+						minWidth={120}
+						cellRendererFramework={(props: { data: LectureDoc }) => {
+							if (props.data) {
+								return FileUploadDialog({ lecture: props.data })
+							} else {
+								return <div> </div>
+							}
+						}}
 					/>
 				</AgGridReact>
 			</div>
