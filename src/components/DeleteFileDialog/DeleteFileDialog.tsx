@@ -17,8 +17,8 @@ const dialogContentProps = {
 	closeButtonAriaLabel: '취소',
 };
 
-const DeleteFileDialog: React.FC<{ lecture: LectureDoc, fullPath: string, fileName: string }> = (props) => {
-	const { lecture, fullPath, fileName } = props;
+const DeleteFileDialog: React.FC<{ lecture: LectureDoc, fullPath: string, fileId: string, fileName: string }> = (props) => {
+	const { lecture, fullPath, fileId, fileName } = props;
 	const [errorMsg, setErrorMsg] = useState<string | undefined>();
 	const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
 	const labelId: string = useId('dialogLabel');
@@ -39,7 +39,7 @@ const DeleteFileDialog: React.FC<{ lecture: LectureDoc, fullPath: string, fileNa
 
 		try {
 			await firebaseManager.deleteFile(fullPath);
-			const fieldPath = `files.${fileName}`;
+			const fieldPath = `files.${fileId}`;
 			await firebaseManager.updateDoc('lecture', lecture._id, { [fieldPath]: deleteField() })
 		} catch (error) {
 			if (error instanceof Error) {

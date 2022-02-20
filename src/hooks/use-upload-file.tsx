@@ -15,8 +15,8 @@ const useUploadFile = () => {
 
     try {
       const [collection, id] = path.split('/');
-      const fileName = file.name.replace(/\s/g,'').replace(/\./g,'-');
-      const task = firebaseManager.uploadTask(`${collection}/${fileName}`, file);
+      const docId = file.name.replace(/\s/g,'').replace(/\./g,'-');
+      const task = firebaseManager.uploadTask(`${collection}/${docId}`, file);
       return new Promise((resolve, reject) => {
         task.on('state_changed', (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -41,11 +41,11 @@ const useUploadFile = () => {
           // fullPath: filePath,
           // fileName,
           // fileTitle: `${monthlyBillingFeeDoc.subCategory} 비용`
-          const fieldPath = `files.${fileName}`;
+          const fieldPath = `files.${docId}`;
           const result = await firebaseManager.updateDoc(collection, id, { [fieldPath]: {
             downloadURL,
-            fullPath: `${collection}/${fileName}`,
-            fileName: fileName
+            fullPath: `${collection}/${docId}`,
+            fileName: file.name
           }});
           resolve(result);
         });

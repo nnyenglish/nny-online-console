@@ -83,9 +83,10 @@ const Lecture = () => {
 			autoHeight: true,
 			detailGridOptions: {
 				columnDefs: [
-					{ headerName: '명령', maxWidth: 130, cellRendererFramework: (props: { data: { lecture: LectureDoc, fullPath: string, fileName: string } }) => {
+					{ headerName: '명령', maxWidth: 130, cellRendererFramework: (props: { data: { lecture: LectureDoc, fullPath: string, fileId: string, fileName: string } }) => {
 						if (props.data?.lecture) {
-							return DeleteFileDialog({ lecture: props.data.lecture, fullPath: props.data.fullPath, fileName: props.data.fileName });
+							const { lecture, fullPath, fileId, fileName} = props.data;
+							return DeleteFileDialog({ lecture, fullPath, fileId, fileName });
 						} else {
 							return <div> </div>
 						}
@@ -96,13 +97,13 @@ const Lecture = () => {
 				],
 				defaultColDef: {
           flex: 1,
-
         },
 			},
 			getDetailRowData: (params: any) => {
 				// detail grid에 데이터 공급
 				const lecture: LectureDoc = params.data;
-				const detailRowData = lecture.files ? Object.values(lecture.files).map(files => ({
+				const detailRowData = lecture.files ? Object.entries(lecture.files).map(([fileId, files]) => ({
+					fileId,
 					...files,
 					lecture
 				})) : [];

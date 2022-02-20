@@ -33,7 +33,7 @@ const Navigation = () => {
 	];
 
 	return (
-		<header>
+		<header className={styles["nav-header"]}>
 			<div className={styles["header-title"]}>
 				<h1>NNY online console</h1>
 				<button
