@@ -104,10 +104,10 @@ const ClassRoomAgMultiSelectBox = forwardRef((props: any, ref: any) => {
 		// 창을 닫으면 편집을 멈춘다.
 		if (!editing) {
 			props.api.stopEditing();
+			return;
 		}
 
 		getClassRoomDocs(classRoomCollectionPath, [], docs => {
-			console.log('setClassRooms');
 			setClassRooms(docs.map(doc => doc._id));
 		});
 	}, [editing, props.api, getClassRoomDocs]);
@@ -119,7 +119,12 @@ const ClassRoomAgMultiSelectBox = forwardRef((props: any, ref: any) => {
 		if (checked) {
 			setValue([...value, target.id]);
 		} else {
-			setValue(value.filter((v) => v !== target.id));
+			const values = value.filter((v) => v !== target.id);
+			if (values.length === 0) {
+				setValue(['']);
+			} else {
+				setValue(values);
+			}
 		}
 	};
 
@@ -143,7 +148,7 @@ const ClassRoomAgMultiSelectBox = forwardRef((props: any, ref: any) => {
 					</div>
 				);
 			})}
-			<button onClick={() => setEditing(false)}>닫기</button>
+			<button className={styles.closeBtn} onClick={() => setEditing(false)}>닫기</button>
 		</div>
 	);
 });

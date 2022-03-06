@@ -45,7 +45,18 @@ const User = () => {
 		const user = props.data as UserDoc;
 		const fieldPath = props.colDef.field;
 		if (fieldPath) {
-			firebaseManager.updateDoc(userCollectionPath, user._id, { [fieldPath]: props.newValue });
+			// 변화가 없으면 아무것도 하지 않는다.
+			if (props.oldValue === props.newValue) {
+				return false;
+			}
+
+			// 빈 문자열은 제거한다.
+			if (Array.isArray(props.newValue) && props.newValue.length > 0) {
+				const values = props.newValue.filter(str => str.length > 0);
+				firebaseManager.updateDoc(userCollectionPath, user._id, { [fieldPath]: values });
+			} else {
+				firebaseManager.updateDoc(userCollectionPath, user._id, { [fieldPath]: props.newValue });
+			}
 			return true;
 		}
 		return false;

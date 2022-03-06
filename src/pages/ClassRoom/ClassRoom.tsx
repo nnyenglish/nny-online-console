@@ -40,6 +40,11 @@ const ClassRoom = () => {
 		const lecture = props.data as ClassRoomDoc;
 		const fieldPath = props.colDef.field;
 		if (fieldPath) {
+			// 변화가 없으면 아무것도 하지 않는다.
+			if (props.oldValue === props.newValue) {
+				return false;
+			}
+
 			firebaseManager.updateDoc(classRoomCollectionPath, lecture._id, {
 				[fieldPath]: props.newValue,
 			});

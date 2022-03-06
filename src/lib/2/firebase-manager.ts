@@ -356,7 +356,7 @@ export class FirebaseManager {
 		} = options ?? {};
 
 		if (id === undefined) {
-			throw new TypeError(`id must exist`);
+			throw new TypeError('id must exist');
 		}
 
 		const firestore = this.firestore;

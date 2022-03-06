@@ -1,3 +1,4 @@
+import { deleteField } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from "react";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { ColDef, ValueSetterParams } from "ag-grid-community";
@@ -35,9 +36,21 @@ const valueSetter = (props: ValueSetterParams): boolean => {
 	const lecture = props.data as LectureDoc;
 	const fieldPath = props.colDef.field;
 	if (fieldPath) {
-		firebaseManager.updateDoc(lectureCollectionPath, lecture._id, {
-			[fieldPath]: props.newValue,
-		});
+		// 변화가 없으면 아무것도 하지 않는다.
+		if (props.oldValue === props.newValue) {
+			return false;
+		}
+
+		// 입력한 값이 없으면 삭제한다.
+		if (props.newValue === undefined) {
+			firebaseManager.updateDoc(lectureCollectionPath, lecture._id, {
+				[fieldPath]: deleteField(),
+			});
+		} else {
+			firebaseManager.updateDoc(lectureCollectionPath, lecture._id, {
+				[fieldPath]: props.newValue,
+			});
+		}
 		return true;
 	}
 	return false;

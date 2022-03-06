@@ -152,3 +152,9 @@ button {
   border: none;
   background: inherit;
 }
+
+// ag-grid custom style
+.ag-cell-value {
+  width: 100%;
+  min-height: 26px;
+}
