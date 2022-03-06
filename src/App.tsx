@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { initializeIcons } from '@fluentui/react';
+import { initializeIcons, Spinner, SpinnerSize } from '@fluentui/react';
 
 import AppRouter from './Router';
 import { FirebaseManager } from './lib/2/firebase-manager';
@@ -31,7 +31,7 @@ function App() {
   return (
     <>
       {
-        init ? <AppRouter isLoggedIn={isLoggedIn}/> : <span>로딩중입니다.</span>
+        init ? <AppRouter isLoggedIn={isLoggedIn}/> : <div className='appLoading'><Spinner size={SpinnerSize.large} /></div>
       }
       <footer>&copy; {new Date().getFullYear()} 누나영어학연구소</footer>
     </>

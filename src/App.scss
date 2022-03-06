@@ -25,3 +25,14 @@ footer {
 .agContainer {
   flex: 1;
 }
+
+.appLoading {
+  font-size: 32px;
+  color: white;
+  background-color: #2d3436;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}

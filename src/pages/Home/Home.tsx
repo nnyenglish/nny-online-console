@@ -41,7 +41,7 @@ const Home = () => {
 						<h2 className={styles.heroTitle}>NNY Console</h2>
 					</div>
 					<div className={styles.oneHalf}>
-						<p><a className={styles.link} href="https://classnny.web.app/home" target="_blank">classnny</a>의 사용자 및 컨텐츠 관리자 페이지입니다.</p>
+						<p><a className={styles.link} href="https://classnny.web.app/home" target="_blank" rel="noopener noreferrer">classnny</a>의 사용자 및 컨텐츠 관리자 페이지입니다.</p>
 					</div>
 				</div>
 			</section>
