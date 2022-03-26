@@ -35,7 +35,7 @@ const Auth = () => {
 	};
 
 	return (
-		<div className={styles["authContainer"]}>
+		<div className={styles.authContainer}>
 			<h2>로그인</h2>
 			<form onSubmit={onSubmit}>
 				<input

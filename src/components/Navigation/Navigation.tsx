@@ -30,6 +30,7 @@ const Navigation = () => {
 		{ name: "Lecture", route: "/lecture", forAdmin: true },
 		{ name: "ClassRoom", route: "/class-room", forAdmin: true },
 		{ name: "User", route: "/user", forAdmin: true },
+		{ name: "Order", route: "/order", forAdmin: true },
 	];
 
 	return (

@@ -4,9 +4,10 @@ import Auth from "./pages/Auth/Auth";
 import Home from "./pages/Home/Home";
 import Lecture from "./pages/Lecture/Lecture";
 import User from "./pages/User/User";
+import Order from './pages/Order/Order';
+import ClassRoom from "./pages/ClassRoom/ClassRoom";
 
 import Navigation from "./components/Navigation/Navigation";
-import ClassRoom from "./pages/ClassRoom/ClassRoom";
 
 interface IProps {
 	isLoggedIn: boolean;
@@ -23,6 +24,7 @@ const AppRouter = ({ isLoggedIn }: IProps) => {
 						<Route path="/lecture" element={<Lecture />} />
 						<Route path="/class-room" element={<ClassRoom />} />
 						<Route path="/user" element={<User />} />
+						<Route path="/order" element={<Order />} />
 						<Route path="/" element={<Navigate replace to="/home" />} />
 					</>
 				) : (
